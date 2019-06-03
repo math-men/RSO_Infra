@@ -16,26 +16,6 @@ resource "aws_subnet" "public" {
   }
 }
 
-resource "aws_security_group" "main" {
-  name        = "Allow all - sshort"
-  description = "Allow 80"
-  vpc_id      = "${aws_vpc.main.id}"
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 resource "aws_internet_gateway" "ig" {
   vpc_id = "${aws_vpc.main.id}"
 

@@ -53,6 +53,25 @@ resource "aws_ecs_task_definition" "link_service" {
 DEFINITION
 }
 
+resource "aws_security_group" "link_service" {
+  name        = "sshort-link-service-security-group"
+  vpc_id      = "${aws_vpc.main.id}"
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_ecs_service" "link_service" {
   name            = "link-service"
   cluster         = "${aws_ecs_cluster.sshort_cluster.id}"
@@ -63,7 +82,7 @@ resource "aws_ecs_service" "link_service" {
   network_configuration {
     subnets          = ["${aws_subnet.public.*.id}"]
     assign_public_ip = true
-    security_groups  = ["${aws_security_group.main.id}"]
+    security_groups  = ["${aws_security_group.link_service.id}"]
   }
 
   load_balancer {

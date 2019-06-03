@@ -15,6 +15,16 @@ resource "aws_ecs_task_definition" "frontend" {
 [
   {
     "cpu": ${var.frontend_cpu},
+    "environment": [
+      {
+        "name": "REACT_APP_API_URL",
+        "value": "${var.root_domain_name}"
+      },
+      {
+        "name": "REACT_APP_HOSTNAME",
+        "value": "${var.root_domain_name}"
+      }
+    ],
     "portMappings": [
       {
         "containerPort": 80,
@@ -38,6 +48,25 @@ resource "aws_ecs_task_definition" "frontend" {
 DEFINITION
 }
 
+resource "aws_security_group" "frontend" {
+  name        = "sshort-frontend-security-group"
+  vpc_id      = "${aws_vpc.main.id}"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_ecs_service" "frontend" {
   name            = "frontend"
   cluster         = "${aws_ecs_cluster.sshort_cluster.id}"
@@ -48,7 +77,7 @@ resource "aws_ecs_service" "frontend" {
   network_configuration {
     subnets          = ["${aws_subnet.public.*.id}"]
     assign_public_ip = true
-    security_groups  = ["${aws_security_group.main.id}"]
+    security_groups  = ["${aws_security_group.frontend.id}"]
   }
 
   load_balancer {
