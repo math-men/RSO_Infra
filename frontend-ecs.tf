@@ -15,16 +15,6 @@ resource "aws_ecs_task_definition" "frontend" {
 [
   {
     "cpu": ${var.frontend_cpu},
-    "environment": [
-      {
-        "name": "REACT_APP_API_URL",
-        "value": "${var.root_domain_name}"
-      },
-      {
-        "name": "REACT_APP_HOSTNAME",
-        "value": "${var.root_domain_name}"
-      }
-    ],
     "portMappings": [
       {
         "containerPort": 80,
